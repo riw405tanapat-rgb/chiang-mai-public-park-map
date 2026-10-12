@@ -91,10 +91,75 @@ const placeImages = new Map([
         sourceUrl: "https://www.cmcity.go.th/data/content/2024/22456/cms/big/image_cms_cdilnpqsux57.jpg",
         credit: "ที่มา: เทศบาลนครเชียงใหม่"
     }],
+    [9, {
+        url: "https://greeningupthailand.org/wp-content/uploads/2024/12/DJI_0278-1024x576.jpg",
+        sourceUrl: "https://greeningupthailand.org/wp-content/uploads/2024/12/DJI_0278-1024x576.jpg",
+        credit: "ที่มา: Greening Up Thailand"
+    }],
+    [10, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnwaDgWOvrs0JMjajATRsmBh1ehMKhVQhQAOvrL2eCC7tbg0JGFYKd490S&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnwaDgWOvrs0JMjajATRsmBh1ehMKhVQhQAOvrL2eCC7tbg0JGFYKd490S&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
     [12, {
-        url: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chiang_Mai_-_Wat_Umong_Maha_Therachan_-_0001.jpg?width=900",
-        sourceUrl: "https://commons.wikimedia.org/wiki/File:Chiang_Mai_-_Wat_Umong_Maha_Therachan_-_0001.jpg",
-        credit: "Stefan Fussan · CC BY-SA 3.0"
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCOk8S7PPwgBuNYswwrpjr_IXE3-r11PCnl-WhYd9H6Q&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCOk8S7PPwgBuNYswwrpjr_IXE3-r11PCnl-WhYd9H6Q&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [14, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY_9vxt-iIjvpgMO0pEXQUcR8SWMhQB7cSNSFhKtFwlAR663Tt3YRKLPKL&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY_9vxt-iIjvpgMO0pEXQUcR8SWMhQB7cSNSFhKtFwlAR663Tt3YRKLPKL&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [15, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeRtGtLtPAQX4UPa6U2FUd2JeQ6C6LgtSe2Pdq4-NwY_Ezn1vET8AulPqY&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeRtGtLtPAQX4UPa6U2FUd2JeQ6C6LgtSe2Pdq4-NwY_Ezn1vET8AulPqY&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [16, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4s4aA0-ix2hZcPX5SpWHdrAVAIJ5i2wi-UeGttpkanJ2BBe-vBOv9UbKI&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4s4aA0-ix2hZcPX5SpWHdrAVAIJ5i2wi-UeGttpkanJ2BBe-vBOv9UbKI&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [17, {
+        url: "https://img.wongnai.com/p/1920x0/2023/01/01/9e617130158743c6b81becc87022be26.jpg",
+        sourceUrl: "https://img.wongnai.com/p/1920x0/2023/01/01/9e617130158743c6b81becc87022be26.jpg",
+        credit: "ที่มา: Wongnai"
+    }],
+    [18, {
+        url: "https://files.thailandtourismdirectory.go.th/assets/upload/2020/06/08/202006087a84fabf22a308d03e78ebf5da278efa134754.jpg",
+        sourceUrl: "https://files.thailandtourismdirectory.go.th/assets/upload/2020/06/08/202006087a84fabf22a308d03e78ebf5da278efa134754.jpg",
+        credit: "ที่มา: Thailand Tourism Directory"
+    }],
+    [19, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPQcCE7Tqv9dhC0Gshxp0flkV21z9TftcunQuMMzXWT9EP-NxUXAgtRnA&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPQcCE7Tqv9dhC0Gshxp0flkV21z9TftcunQuMMzXWT9EP-NxUXAgtRnA&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [20, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7JgU4-4mkUfHp63O7cgY02H4gpUozBWl7_rnEpmxrv3bgZANAXXjL5jU&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7JgU4-4mkUfHp63O7cgY02H4gpUozBWl7_rnEpmxrv3bgZANAXXjL5jU&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [21, {
+        url: "https://f.ptcdn.info/463/084/000/lxakfeqeiI6YY8fEh1u-o.jpg",
+        sourceUrl: "https://f.ptcdn.info/463/084/000/lxakfeqeiI6YY8fEh1u-o.jpg",
+        credit: "ที่มา: Pantip CDN"
+    }],
+    [22, {
+        url: "https://cms.dmpcdn.com/ugcarticle/2022/08/15/f6e6df50-1cb4-11ed-a661-6f690afb971b_original.jpg",
+        sourceUrl: "https://cms.dmpcdn.com/ugcarticle/2022/08/15/f6e6df50-1cb4-11ed-a661-6f690afb971b_original.jpg",
+        credit: "ที่มา: TrueID"
+    }],
+    [23, {
+        url: "https://www.cmhy.city/uploads/photos/39-Sports/250-Jogging-location/33270-Thung-Siew-Park/place33270_IMG_20220903_1548003.jpg",
+        sourceUrl: "https://www.cmhy.city/uploads/photos/39-Sports/250-Jogging-location/33270-Thung-Siew-Park/place33270_IMG_20220903_1548003.jpg",
+        credit: "ที่มา: CMHY.city"
+    }],
+    [24, {
+        url: "https://www.topchiangmai.com/wp-content/uploads/2016/07/หนองสะเรียม14.jpg",
+        sourceUrl: "https://www.topchiangmai.com/wp-content/uploads/2016/07/หนองสะเรียม14.jpg",
+        credit: "ที่มา: Top Chiang Mai"
     }]
 ]);
 
