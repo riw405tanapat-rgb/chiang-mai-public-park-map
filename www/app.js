@@ -101,6 +101,11 @@ const placeImages = new Map([
         sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnwaDgWOvrs0JMjajATRsmBh1ehMKhVQhQAOvrL2eCC7tbg0JGFYKd490S&s=10",
         credit: "ที่มา: Google Images (แคช)"
     }],
+    [11, {
+        url: `${import.meta.env.BASE_URL}images/park-11-front-church.png`,
+        sourceUrl: `${import.meta.env.BASE_URL}images/park-11-front-church.png`,
+        credit: "ภาพสวนหย่อมท่าน้ำหน้าโบสถ์"
+    }],
     [12, {
         url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCOk8S7PPwgBuNYswwrpjr_IXE3-r11PCnl-WhYd9H6Q&s=10",
         sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCOk8S7PPwgBuNYswwrpjr_IXE3-r11PCnl-WhYd9H6Q&s=10",
