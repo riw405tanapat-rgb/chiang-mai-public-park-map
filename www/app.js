@@ -11,10 +11,33 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const map = L.map("map", { zoomControl: false }).setView([18.7883, 98.9853], 11);
 L.control.zoom({ position: "topright" }).addTo(map);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+const streetMap = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+});
+
+const satelliteMap = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+        maxZoom: 19,
+        attribution:
+            "Tiles &copy; Esri &mdash; Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community"
+    }
+);
+
+streetMap.addTo(map);
+
+L.control.layers(
+    {
+        "🗺️ แผนที่ถนน": streetMap,
+        "🛰️ ภาพถ่ายดาวเทียม": satelliteMap
+    },
+    {},
+    {
+        position: "topleft",
+        collapsed: false
+    }
+).addTo(map);
 
 const markerLayer = L.layerGroup().addTo(map);
 const markerById = new Map();

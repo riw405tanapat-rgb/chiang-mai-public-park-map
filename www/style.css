@@ -349,6 +349,27 @@ main {
     color: var(--green-900) !important;
 }
 
+.leaflet-control-layers {
+    overflow: hidden;
+    border: 1px solid rgba(219, 231, 225, 0.95) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    box-shadow: 0 8px 24px rgba(18, 60, 50, 0.16) !important;
+    backdrop-filter: blur(8px);
+}
+
+.leaflet-control-layers-expanded {
+    padding: 9px 12px !important;
+    color: var(--green-900);
+    font-family: "Noto Sans Thai", sans-serif;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.leaflet-control-layers-selector {
+    accent-color: var(--green-700);
+}
+
 .leaflet-popup-content-wrapper {
     border-radius: 14px;
     box-shadow: 0 10px 30px rgba(18, 60, 50, 0.2);
