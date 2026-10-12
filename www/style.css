@@ -363,6 +363,12 @@ main {
     background: var(--white);
 }
 
+.secondary-button.active {
+    color: var(--white);
+    border-color: #2563eb;
+    background: #2563eb;
+}
+
 .full-button {
     width: 100%;
     margin-top: 9px;
@@ -393,6 +399,11 @@ main {
     border-radius: 50%;
     background: #2563eb;
     box-shadow: 0 2px 8px rgba(30, 64, 175, 0.55);
+}
+
+#map.picking-location,
+#map.picking-location .leaflet-interactive {
+    cursor: crosshair !important;
 }
 
 @keyframes location-pulse {

@@ -51,9 +51,14 @@
                         <summary>📍 ค้นหาสถานที่ใกล้ที่สุด</summary>
                         <div class="tool-content">
                             <p>อนุญาตให้เบราว์เซอร์อ่านตำแหน่ง เพื่อปักหมุดและค้นหาสถานที่ใกล้คุณ</p>
-                            <button id="useMyLocation" class="primary-button full-button" type="button">
-                                ◎ ค้นหาตำแหน่งของฉัน
-                            </button>
+                            <div class="tool-actions">
+                                <button id="useMyLocation" class="primary-button" type="button">
+                                    ◎ ใช้ GPS
+                                </button>
+                                <button id="pickLocation" class="secondary-button" type="button">
+                                    ✚ เลือกบนแผนที่
+                                </button>
+                            </div>
                             <div id="nearestResult" class="tool-result" aria-live="polite"></div>
                         </div>
                     </details>

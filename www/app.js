@@ -62,10 +62,12 @@ const nearestResult = document.querySelector("#nearestResult");
 const routeResult = document.querySelector("#routeResult");
 const calculateRoutesButton = document.querySelector("#calculateRoutes");
 const useMyLocationButton = document.querySelector("#useMyLocation");
+const pickLocationButton = document.querySelector("#pickLocation");
 
 let allPlaces = [];
 let activeCategory = "ทั้งหมด";
 let currentPosition = null;
+let isPickingLocation = false;
 
 function escapeHtml(value) {
     return String(value ?? "-").replace(/[&<>'"]/g, (character) => ({
@@ -199,8 +201,22 @@ function showCurrentPositionOnMap(position) {
         icon: locationIcon,
         zIndexOffset: 1000
     })
-        .bindTooltip("ตำแหน่งของฉัน", { permanent: false, direction: "top" })
+        .bindTooltip(position.label || "ตำแหน่งของฉัน", { permanent: false, direction: "top" })
         .addTo(userLocationLayer);
+}
+
+function stopPickingLocation() {
+    isPickingLocation = false;
+    document.querySelector("#map").classList.remove("picking-location");
+    pickLocationButton.classList.remove("active");
+    pickLocationButton.textContent = "✚ เลือกบนแผนที่";
+}
+
+function setCurrentPosition(latitude, longitude, label) {
+    currentPosition = { latitude, longitude, label };
+    showCurrentPositionOnMap(currentPosition);
+    stopPickingLocation();
+    findNearestPlace();
 }
 
 function findNearestPlace() {
@@ -233,6 +249,7 @@ function findNearestPlace() {
         <div class="nearest-result" role="button" tabindex="0">
             <strong>${escapeHtml(nearest.place.name)}</strong><br>
             ระยะเส้นตรงประมาณ ${(nearest.distance).toFixed(2)} กม.<br>
+            <span>${escapeHtml(currentPosition.label)} (${currentPosition.latitude.toFixed(5)}, ${currentPosition.longitude.toFixed(5)})</span><br>
             <span>คลิกเพื่อดูบนแผนที่</span>
         </div>
     `;
@@ -496,22 +513,42 @@ useMyLocationButton.addEventListener("click", () => {
     useMyLocationButton.textContent = "กำลังค้นหาตำแหน่ง...";
     navigator.geolocation.getCurrentPosition(
         ({ coords }) => {
-            currentPosition = {
-                latitude: coords.latitude,
-                longitude: coords.longitude
-            };
-            showCurrentPositionOnMap(currentPosition);
             useMyLocationButton.disabled = false;
-            useMyLocationButton.textContent = "↻ อัปเดตตำแหน่งของฉัน";
-            findNearestPlace();
+            useMyLocationButton.textContent = "↻ อัปเดต GPS";
+            setCurrentPosition(
+                coords.latitude,
+                coords.longitude,
+                "ตำแหน่งจาก GPS"
+            );
         },
         () => {
             nearestResult.innerHTML = '<div class="result-message error">ไม่สามารถอ่านตำแหน่งได้ กรุณาอนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์</div>';
             useMyLocationButton.disabled = false;
-            useMyLocationButton.textContent = "◎ ค้นหาตำแหน่งของฉัน";
+            useMyLocationButton.textContent = "◎ ใช้ GPS";
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
+});
+
+pickLocationButton.addEventListener("click", () => {
+    if (isPickingLocation) {
+        stopPickingLocation();
+        nearestResult.innerHTML = "";
+        return;
+    }
+
+    isPickingLocation = true;
+    document.querySelector("#map").classList.add("picking-location");
+    pickLocationButton.classList.add("active");
+    pickLocationButton.textContent = "ยกเลิกการเลือก";
+    nearestResult.innerHTML = `
+        <div class="result-message">คลิกตำแหน่งที่ต้องการบนแผนที่</div>
+    `;
+});
+
+map.on("click", ({ latlng }) => {
+    if (!isPickingLocation) return;
+    setCurrentPosition(latlng.lat, latlng.lng, "ตำแหน่งที่เลือกบนแผนที่");
 });
 
 loadPlaces();
