@@ -41,6 +41,7 @@ L.control.layers(
 
 const markerLayer = L.layerGroup().addTo(map);
 const routeLayer = L.layerGroup().addTo(map);
+const userLocationLayer = L.layerGroup().addTo(map);
 const markerById = new Map();
 const cardById = new Map();
 const categoryColors = new Map();
@@ -56,20 +57,15 @@ const placeList = document.querySelector("#placeList");
 const summaryElement = document.querySelector("#summary");
 const categoryFilters = document.querySelector("#categoryFilters");
 const mapLegend = document.querySelector("#mapLegend");
-const nearestLatInput = document.querySelector("#nearestLat");
-const nearestLngInput = document.querySelector("#nearestLng");
-const routeLatInput = document.querySelector("#routeLat");
-const routeLngInput = document.querySelector("#routeLng");
 const routeDestination = document.querySelector("#routeDestination");
 const nearestResult = document.querySelector("#nearestResult");
 const routeResult = document.querySelector("#routeResult");
-const findNearestButton = document.querySelector("#findNearest");
 const calculateRoutesButton = document.querySelector("#calculateRoutes");
 const useMyLocationButton = document.querySelector("#useMyLocation");
-const copyCoordinatesButton = document.querySelector("#copyCoordinates");
 
 let allPlaces = [];
 let activeCategory = "ทั้งหมด";
+let currentPosition = null;
 
 function escapeHtml(value) {
     return String(value ?? "-").replace(/[&<>'"]/g, (character) => ({
@@ -88,21 +84,6 @@ function colorForCategory(category) {
         categoryColors.set(category, colorPalette[categoryColors.size % colorPalette.length]);
     }
     return categoryColors.get(category);
-}
-
-function readCoordinates(latitudeInput, longitudeInput) {
-    const latitude = Number(latitudeInput.value);
-    const longitude = Number(longitudeInput.value);
-
-    if (
-        !Number.isFinite(latitude) || !Number.isFinite(longitude) ||
-        latitude < -90 || latitude > 90 ||
-        longitude < -180 || longitude > 180
-    ) {
-        return null;
-    }
-
-    return { latitude, longitude };
 }
 
 function haversineDistance(startLatitude, startLongitude, endLatitude, endLongitude) {
@@ -204,10 +185,27 @@ function populateDestinationOptions() {
     `).join("");
 }
 
+function showCurrentPositionOnMap(position) {
+    userLocationLayer.clearLayers();
+
+    const locationIcon = L.divIcon({
+        className: "",
+        html: '<div class="user-location-marker"><span class="user-location-dot"></span></div>',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+    });
+
+    L.marker([position.latitude, position.longitude], {
+        icon: locationIcon,
+        zIndexOffset: 1000
+    })
+        .bindTooltip("ตำแหน่งของฉัน", { permanent: false, direction: "top" })
+        .addTo(userLocationLayer);
+}
+
 function findNearestPlace() {
-    const coordinates = readCoordinates(nearestLatInput, nearestLngInput);
-    if (!coordinates) {
-        nearestResult.innerHTML = '<div class="result-message error">กรุณากรอกละติจูดและลองจิจูดให้ถูกต้อง</div>';
+    if (!currentPosition) {
+        nearestResult.innerHTML = '<div class="result-message error">กรุณากดค้นหาตำแหน่งของฉันก่อน</div>';
         return;
     }
 
@@ -215,8 +213,8 @@ function findNearestPlace() {
         .map((place) => ({
             place,
             distance: haversineDistance(
-                coordinates.latitude,
-                coordinates.longitude,
+                currentPosition.latitude,
+                currentPosition.longitude,
                 Number(place.latitude),
                 Number(place.longitude)
             )
@@ -255,16 +253,8 @@ function findNearestPlace() {
         }
     });
 
-    L.circleMarker([coordinates.latitude, coordinates.longitude], {
-        radius: 7,
-        color: "#ffffff",
-        weight: 3,
-        fillColor: "#111827",
-        fillOpacity: 1
-    }).bindTooltip("ตำแหน่งของคุณ").addTo(routeLayer);
-
     map.fitBounds([
-        [coordinates.latitude, coordinates.longitude],
+        [currentPosition.latitude, currentPosition.longitude],
         [nearest.place.latitude, nearest.place.longitude]
     ], { padding: [55, 55], maxZoom: 14 });
 }
@@ -286,13 +276,13 @@ function highlightRoute(routeEntries, selectedIndex) {
 }
 
 async function calculateRoutes() {
-    const start = readCoordinates(routeLatInput, routeLngInput);
+    const start = currentPosition;
     const destination = allPlaces.find(
         (place) => String(place.id) === routeDestination.value
     );
 
     if (!start) {
-        routeResult.innerHTML = '<div class="result-message error">กรุณากรอกพิกัดเริ่มต้นให้ถูกต้อง</div>';
+        routeResult.innerHTML = '<div class="result-message error">กรุณากดค้นหาตำแหน่งของฉันก่อนคำนวณเส้นทาง</div>';
         return;
     }
     if (!destination) {
@@ -333,11 +323,6 @@ async function calculateRoutes() {
             }).addTo(routeLayer);
             return { route, line };
         });
-
-        L.circleMarker([start.latitude, start.longitude], {
-            radius: 7, color: "#ffffff", weight: 3,
-            fillColor: "#111827", fillOpacity: 1
-        }).bindTooltip("จุดเริ่มต้น").addTo(routeLayer);
 
         L.circleMarker([destination.latitude, destination.longitude], {
             radius: 8, color: "#ffffff", weight: 3,
@@ -499,14 +484,7 @@ async function loadPlaces() {
 }
 
 searchInput.addEventListener("input", applyFilters);
-findNearestButton.addEventListener("click", findNearestPlace);
 calculateRoutesButton.addEventListener("click", calculateRoutes);
-
-copyCoordinatesButton.addEventListener("click", () => {
-    routeLatInput.value = nearestLatInput.value;
-    routeLngInput.value = nearestLngInput.value;
-    routeResult.innerHTML = '<div class="result-message">คัดลอกพิกัดเริ่มต้นแล้ว</div>';
-});
 
 useMyLocationButton.addEventListener("click", () => {
     if (!navigator.geolocation) {
@@ -518,20 +496,19 @@ useMyLocationButton.addEventListener("click", () => {
     useMyLocationButton.textContent = "กำลังค้นหาตำแหน่ง...";
     navigator.geolocation.getCurrentPosition(
         ({ coords }) => {
-            const latitude = coords.latitude.toFixed(6);
-            const longitude = coords.longitude.toFixed(6);
-            nearestLatInput.value = latitude;
-            nearestLngInput.value = longitude;
-            routeLatInput.value = latitude;
-            routeLngInput.value = longitude;
+            currentPosition = {
+                latitude: coords.latitude,
+                longitude: coords.longitude
+            };
+            showCurrentPositionOnMap(currentPosition);
             useMyLocationButton.disabled = false;
-            useMyLocationButton.textContent = "ใช้ตำแหน่งของฉัน";
+            useMyLocationButton.textContent = "↻ อัปเดตตำแหน่งของฉัน";
             findNearestPlace();
         },
         () => {
-            nearestResult.innerHTML = '<div class="result-message error">ไม่สามารถอ่านตำแหน่งได้ กรุณาอนุญาตการเข้าถึงตำแหน่งหรือกรอกพิกัดเอง</div>';
+            nearestResult.innerHTML = '<div class="result-message error">ไม่สามารถอ่านตำแหน่งได้ กรุณาอนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์</div>';
             useMyLocationButton.disabled = false;
-            useMyLocationButton.textContent = "ใช้ตำแหน่งของฉัน";
+            useMyLocationButton.textContent = "◎ ค้นหาตำแหน่งของฉัน";
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );

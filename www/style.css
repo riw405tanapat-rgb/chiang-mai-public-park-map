@@ -363,6 +363,50 @@ main {
     background: var(--white);
 }
 
+.full-button {
+    width: 100%;
+    margin-top: 9px;
+}
+
+.user-location-marker {
+    position: relative;
+    width: 22px;
+    height: 22px;
+}
+
+.user-location-marker::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.28);
+    animation: location-pulse 1.8s ease-out infinite;
+}
+
+.user-location-dot {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 12px;
+    height: 12px;
+    border: 3px solid var(--white);
+    border-radius: 50%;
+    background: #2563eb;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.55);
+}
+
+@keyframes location-pulse {
+    0% {
+        opacity: 1;
+        transform: scale(0.75);
+    }
+    75%,
+    100% {
+        opacity: 0;
+        transform: scale(2.2);
+    }
+}
+
 .tool-result:not(:empty) {
     margin-top: 9px;
 }
