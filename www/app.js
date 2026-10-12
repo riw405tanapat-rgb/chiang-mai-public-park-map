@@ -3,11 +3,16 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./style.css";
 
+// ===== การเชื่อมต่อฐานข้อมูล =====
+// Publishable key ใช้ฝั่งเบราว์เซอร์ได้ เพราะสิทธิ์อ่านข้อมูลถูกควบคุมด้วย RLS ใน Supabase
 const SUPABASE_URL = "https://gtklutfnugqkntdiedqh.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_vTDNH6vyrKxEbW5p3iwpkw_GqOnVHtK";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+// ===== การสร้างแผนที่และชั้นแผนที่ฐาน =====
+// กำหนดจุดศูนย์กลางเริ่มต้นที่ตัวเมืองเชียงใหม่ และเพิ่มปุ่มซูมเองเพื่อเลือกตำแหน่งได้
 const map = L.map("map", { zoomControl: false }).setView([18.7883, 98.9853], 11);
 L.control.zoom({ position: "topright" }).addTo(map);
 
@@ -39,6 +44,8 @@ L.control.layers(
     }
 ).addTo(map);
 
+// ===== ชั้นข้อมูลและตัวแปรที่ใช้ควบคุมแผนที่ =====
+// แยกหมุดสถานที่ เส้นทาง และตำแหน่งผู้ใช้ออกจากกัน เพื่อให้ล้าง/วาดใหม่ได้โดยไม่กระทบชั้นอื่น
 const markerLayer = L.layerGroup().addTo(map);
 const routeLayer = L.layerGroup().addTo(map);
 const userLocationLayer = L.layerGroup().addTo(map);
@@ -50,6 +57,8 @@ const colorPalette = [
     "#d53f8c", "#319795", "#c53030", "#718096"
 ];
 const routeColors = ["#e53e3e", "#3182ce", "#805ad5"];
+
+// รูปสำรองของแต่ละสถานที่ ใช้เมื่อแถวข้อมูลใน Supabase ยังไม่มี image_url
 const placeImages = new Map([
     [1, {
         url: "https://readthecloud.co/wp-content/uploads/2026/08/005_11zon.webp",
@@ -173,6 +182,8 @@ const placeImages = new Map([
     }]
 ]);
 
+// ===== อ้างอิงองค์ประกอบบนหน้าเว็บและสถานะของแอป =====
+// เก็บ DOM elements ไว้ใช้ซ้ำ โดยไม่ต้องค้นหาใหม่ทุกครั้งที่หน้าจอเปลี่ยน
 const statusElement = document.querySelector("#status");
 const searchInput = document.querySelector("#searchInput");
 const placeList = document.querySelector("#placeList");
@@ -191,6 +202,7 @@ let activeCategory = "ทั้งหมด";
 let currentPosition = null;
 let isPickingLocation = false;
 
+// ป้องกันข้อความจากฐานข้อมูลถูกตีความเป็น HTML ก่อนนำไปแสดงบนหน้าเว็บ
 function escapeHtml(value) {
     return String(value ?? "-").replace(/[&<>'"]/g, (character) => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;",
@@ -198,11 +210,13 @@ function escapeHtml(value) {
     })[character]);
 }
 
+// สร้างรายการประเภทสถานที่แบบไม่ซ้ำ และเรียงตามภาษาไทย
 function getCategories(places = allPlaces) {
     return [...new Set(places.map((place) => place.category).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, "th"));
 }
 
+// กำหนดสีประจำประเภท เพื่อให้หมุด ตัวกรอง และคำอธิบายแผนที่ใช้สีเดียวกัน
 function colorForCategory(category) {
     if (!categoryColors.has(category)) {
         categoryColors.set(category, colorPalette[categoryColors.size % colorPalette.length]);
@@ -210,6 +224,7 @@ function colorForCategory(category) {
     return categoryColors.get(category);
 }
 
+// คำนวณระยะเส้นตรงบนผิวโลกด้วยสูตร Haversine หน่วยเป็นกิโลเมตร
 function haversineDistance(startLatitude, startLongitude, endLatitude, endLongitude) {
     const earthRadiusKm = 6371.0088;
     const toRadians = (degrees) => degrees * Math.PI / 180;
@@ -224,11 +239,13 @@ function haversineDistance(startLatitude, startLongitude, endLatitude, endLongit
     return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// แปลงระยะทางจากเมตรให้เป็นข้อความที่อ่านง่าย
 function formatDistance(metres) {
     if (metres < 1000) return `${Math.round(metres)} ม.`;
     return `${(metres / 1000).toFixed(1)} กม.`;
 }
 
+// แปลงเวลาเดินทางจากวินาทีเป็นนาทีหรือชั่วโมง
 function formatDuration(seconds) {
     const totalMinutes = Math.round(seconds / 60);
     if (totalMinutes < 60) return `${totalMinutes} นาที`;
@@ -238,6 +255,7 @@ function formatDuration(seconds) {
     return minutes ? `${hours} ชม. ${minutes} นาที` : `${hours} ชม.`;
 }
 
+// สร้างส่วนรูปภาพสำหรับการ์ดและป๊อปอัป โดยเลือกข้อมูลจาก Supabase ก่อน แล้วจึงใช้รูปสำรอง
 function createPlaceMedia(place, variant = "card") {
     const media = place.image_url
         ? {
@@ -268,6 +286,7 @@ function createPlaceMedia(place, variant = "card") {
     `;
 }
 
+// สร้างรายละเอียดในป๊อปอัปของหมุด พร้อมลิงก์เปิดเส้นทางใน Google Maps
 function createPopup(place) {
     const latitude = Number(place.latitude);
     const longitude = Number(place.longitude);
@@ -292,6 +311,7 @@ function createPopup(place) {
     `;
 }
 
+// อัปเดตตัวเลขสรุปจำนวนสถานที่ ประเภท และอำเภอตามผลการกรองปัจจุบัน
 function updateSummary(places) {
     const districtCount = new Set(places.map((place) => place.district).filter(Boolean)).size;
     const categoryCount = getCategories(places).length;
@@ -302,6 +322,7 @@ function updateSummary(places) {
     `;
 }
 
+// สร้างคำอธิบายสีหมุดที่มุมแผนที่
 function renderLegend() {
     const items = getCategories().map((category) => `
         <div class="legend-item">
@@ -316,6 +337,7 @@ function renderLegend() {
     `;
 }
 
+// สร้างปุ่มกรองประเภทและผูกเหตุการณ์คลิกให้กรองรายการทันที
 function renderCategoryFilters() {
     categoryFilters.innerHTML = "";
     ["ทั้งหมด", ...getCategories()].forEach((category) => {
@@ -334,12 +356,14 @@ function renderCategoryFilters() {
     });
 }
 
+// เติมรายชื่อสถานที่ลงในช่องเลือกปลายทางสำหรับคำนวณเส้นทาง
 function populateDestinationOptions() {
     routeDestination.innerHTML = allPlaces.map((place) => `
         <option value="${escapeHtml(place.id)}">${escapeHtml(place.id)}. ${escapeHtml(place.name)}</option>
     `).join("");
 }
 
+// วาดหมุดสีน้ำเงินเพื่อแสดงตำแหน่งเริ่มต้นของผู้ใช้
 function showCurrentPositionOnMap(position) {
     userLocationLayer.clearLayers();
 
@@ -358,6 +382,7 @@ function showCurrentPositionOnMap(position) {
         .addTo(userLocationLayer);
 }
 
+// ออกจากโหมดคลิกเลือกตำแหน่งและคืนสถานะปุ่ม/เมาส์เป็นปกติ
 function stopPickingLocation() {
     isPickingLocation = false;
     document.querySelector("#map").classList.remove("picking-location");
@@ -365,6 +390,7 @@ function stopPickingLocation() {
     pickLocationButton.textContent = "✚ เลือกบนแผนที่";
 }
 
+// บันทึกตำแหน่งเริ่มต้น วาดหมุด และค้นหาสถานที่ที่ใกล้ที่สุดใหม่
 function setCurrentPosition(latitude, longitude, label) {
     currentPosition = { latitude, longitude, label };
     showCurrentPositionOnMap(currentPosition);
@@ -372,6 +398,7 @@ function setCurrentPosition(latitude, longitude, label) {
     findNearestPlace();
 }
 
+// เปรียบเทียบระยะ Haversine ของทุกสถานที่ แล้วแสดงรายการที่อยู่ใกล้ที่สุด
 function findNearestPlace() {
     if (!currentPosition) {
         nearestResult.innerHTML = '<div class="result-message error">กรุณากดค้นหาตำแหน่งของฉันก่อน</div>';
@@ -429,6 +456,7 @@ function findNearestPlace() {
     ], { padding: [55, 55], maxZoom: 14 });
 }
 
+// เน้นเส้นทางที่ผู้ใช้เลือก พร้อมซูมแผนที่ให้เห็นเส้นทางทั้งหมด
 function highlightRoute(routeEntries, selectedIndex) {
     routeEntries.forEach((entry, index) => {
         entry.line.setStyle({
@@ -445,6 +473,7 @@ function highlightRoute(routeEntries, selectedIndex) {
     map.fitBounds(routeEntries[selectedIndex].line.getBounds(), { padding: [55, 55] });
 }
 
+// ขอเส้นทางทางรถยนต์จาก OSRM เรียงตามระยะทาง และแสดงทางเลือกสูงสุด 3 อันดับ
 async function calculateRoutes() {
     const start = currentPosition;
     const destination = allPlaces.find(
@@ -542,6 +571,7 @@ async function calculateRoutes() {
     }
 }
 
+// ทำให้หมุดและการ์ดของสถานที่ที่เลือกเด่นขึ้นพร้อมกัน
 function markSelectedPlace(placeId, scrollCard = false) {
     markerById.forEach((marker, id) => {
         marker.setStyle({
@@ -558,6 +588,7 @@ function markSelectedPlace(placeId, scrollCard = false) {
     }
 }
 
+// เลื่อนแผนที่ไปยังสถานที่ที่เลือกและเปิดป๊อปอัป
 function showPlace(place) {
     const marker = markerById.get(place.id);
     if (!marker) return;
@@ -566,6 +597,7 @@ function showPlace(place) {
     marker.openPopup();
 }
 
+// วาดหมุดและการ์ดรายการใหม่ทั้งหมดจากชุดข้อมูลที่ผ่านการกรองแล้ว
 function renderPlaces(places) {
     markerLayer.clearLayers();
     markerById.clear();
@@ -622,6 +654,7 @@ function renderPlaces(places) {
     if (bounds.length > 0) map.fitBounds(bounds, { padding: [45, 45], maxZoom: 12 });
 }
 
+// กรองข้อมูลจากทั้งคำค้นหาและประเภท ก่อนส่งไปวาดบนหน้าจอ
 function applyFilters() {
     const keyword = searchInput.value.trim().toLowerCase();
     const filteredPlaces = allPlaces.filter((place) => {
@@ -633,6 +666,7 @@ function applyFilters() {
     renderPlaces(filteredPlaces);
 }
 
+// โหลดข้อมูลตาราง places จาก Supabase แล้วเตรียมส่วนต่าง ๆ ของหน้าเว็บ
 async function loadPlaces() {
     statusElement.textContent = "กำลังโหลดข้อมูล...";
     const { data, error } = await supabase.from("places").select("*").order("id", { ascending: true });
@@ -654,9 +688,12 @@ async function loadPlaces() {
     applyFilters();
 }
 
+// ===== เหตุการณ์จากผู้ใช้ =====
+// ค้นหาทันทีขณะพิมพ์ และเริ่มคำนวณเมื่อกดปุ่มเส้นทาง
 searchInput.addEventListener("input", applyFilters);
 calculateRoutesButton.addEventListener("click", calculateRoutes);
 
+// ขอพิกัดจาก GPS ของเบราว์เซอร์ แล้วใช้เป็นจุดเริ่มต้นของการวิเคราะห์
 useMyLocationButton.addEventListener("click", () => {
     if (!navigator.geolocation) {
         nearestResult.innerHTML = '<div class="result-message error">เบราว์เซอร์นี้ไม่รองรับการระบุตำแหน่ง</div>';
@@ -684,6 +721,7 @@ useMyLocationButton.addEventListener("click", () => {
     );
 });
 
+// เปิด/ปิดโหมดที่ให้ผู้ใช้คลิกเลือกตำแหน่งเริ่มต้นเองบนแผนที่
 pickLocationButton.addEventListener("click", () => {
     if (isPickingLocation) {
         stopPickingLocation();
@@ -700,9 +738,11 @@ pickLocationButton.addEventListener("click", () => {
     `;
 });
 
+// เมื่ออยู่ในโหมดเลือกตำแหน่ง ให้นำจุดที่คลิกมาใช้แทน GPS
 map.on("click", ({ latlng }) => {
     if (!isPickingLocation) return;
     setCurrentPosition(latlng.lat, latlng.lng, "ตำแหน่งที่เลือกบนแผนที่");
 });
 
+// เริ่มต้นแอปด้วยการอ่านข้อมูลสถานที่จากฐานข้อมูล
 loadPlaces();

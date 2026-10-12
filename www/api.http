@@ -1,15 +1,16 @@
+### ตรวจสอบว่า Express API Server ตอบสนองได้
 GET http://localhost:3000/api/v1/hello
 
-###
+### อ่านข้อมูลหมู่บ้านทั้งหมด
 GET http://localhost:3000/api/v1/village
 
-###
+### อ่านข้อมูลหมู่บ้านตามจำนวนที่กำหนด (ตัวอย่าง 25 แถว)
 GET http://localhost:3000/api/v1/village/25
 
-###
+### ค้นหาหมู่บ้านจากข้อความบางส่วนในชื่อ
 GET http://localhost:3000/api/v1/village_name/เมือง
 
-###
+### เพิ่มจุดสนใจใหม่ลงตาราง poi
 POST http://localhost:3000/api/v1/add_poi
 Content-Type: application/json
 
