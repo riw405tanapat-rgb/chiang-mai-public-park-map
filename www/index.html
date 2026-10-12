@@ -37,6 +37,13 @@
                         <h2>สถานที่ทั้งหมด</h2>
                         <p>เลือกสถานที่เพื่อดูตำแหน่งบนแผนที่</p>
                     </div>
+
+                    <div id="summary" class="summary" aria-live="polite"></div>
+
+                    <div class="filter-block">
+                        <div class="filter-title">กรองตามประเภท</div>
+                        <div id="categoryFilters" class="category-filters"></div>
+                    </div>
                 </div>
 
                 <div id="placeList"></div>
@@ -44,6 +51,7 @@
 
             <section class="map-section">
                 <div id="map"></div>
+                <div id="mapLegend" class="map-legend" aria-label="คำอธิบายสีของหมุด"></div>
             </section>
         </main>
     </div>
