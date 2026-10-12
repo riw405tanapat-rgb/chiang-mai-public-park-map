@@ -111,6 +111,11 @@ const placeImages = new Map([
         sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCOk8S7PPwgBuNYswwrpjr_IXE3-r11PCnl-WhYd9H6Q&s=10",
         credit: "ที่มา: Google Images (แคช)"
     }],
+    [13, {
+        url: `${import.meta.env.BASE_URL}images/place-13-chotana-health-center.png`,
+        sourceUrl: `${import.meta.env.BASE_URL}images/place-13-chotana-health-center.png`,
+        credit: "ภาพศูนย์สาธารณสุขชุมชนโชตนาฑัตพร"
+    }],
     [14, {
         url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY_9vxt-iIjvpgMO0pEXQUcR8SWMhQB7cSNSFhKtFwlAR663Tt3YRKLPKL&s=10",
         sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY_9vxt-iIjvpgMO0pEXQUcR8SWMhQB7cSNSFhKtFwlAR663Tt3YRKLPKL&s=10",
