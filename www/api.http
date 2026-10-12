@@ -1,0 +1,20 @@
+GET http://localhost:3000/api/v1/hello
+
+###
+GET http://localhost:3000/api/v1/village
+
+###
+GET http://localhost:3000/api/v1/village/25
+
+###
+GET http://localhost:3000/api/v1/village_name/เมือง
+
+###
+POST http://localhost:3000/api/v1/add_poi
+Content-Type: application/json
+
+{
+  "text": "อ่างแก้ว",
+  "lng": 98.9503786292099,
+  "lat": 18.806335702999693
+}

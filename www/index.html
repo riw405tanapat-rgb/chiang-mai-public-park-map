@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="แผนที่รวบรวมสวนสาธารณะและพื้นที่พักผ่อนในจังหวัดเชียงใหม่">
+
+    <title>แผนที่สวนสาธารณะในเชียงใหม่</title>
+</head>
+
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-icon">🌳</div>
+
+                <div>
+                    <h1>แผนที่สวนสาธารณะในเชียงใหม่</h1>
+                    <p id="status">กำลังโหลดข้อมูล...</p>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <span aria-hidden="true">🔎</span>
+
+                <input id="searchInput" type="search" placeholder="ค้นหาชื่อสถานที่ ตำบล หรืออำเภอ" autocomplete="off">
+            </div>
+        </header>
+
+        <main>
+            <aside class="sidebar">
+                <div class="sidebar-heading">
+                    <div>
+                        <h2>สถานที่ทั้งหมด</h2>
+                        <p>เลือกสถานที่เพื่อดูตำแหน่งบนแผนที่</p>
+                    </div>
+                </div>
+
+                <div id="placeList"></div>
+            </aside>
+
+            <section class="map-section">
+                <div id="map"></div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+</body>
+
+</html>

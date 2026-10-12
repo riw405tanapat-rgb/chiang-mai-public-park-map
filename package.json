@@ -1,0 +1,25 @@
+{
+    "name": "chiang-mai-public-park-map",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --config www/vite.config.js",
+        "build": "vite build --config www/vite.config.js",
+        "preview": "vite preview --config www/vite.config.js",
+        "server": "nodemon server.js"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.117.3",
+        "body-parser": "^2.3.0",
+        "bootstrap": "^5.3.8",
+        "cors": "^2.8.6",
+        "express": "^5.2.1",
+        "leaflet": "^1.9.4",
+        "pg": "^8.23.0",
+        "vite": "^8.1.4"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.14"
+    }
+}
