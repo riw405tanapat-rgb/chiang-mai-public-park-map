@@ -250,6 +250,185 @@ main {
     background: #a9beb5;
 }
 
+.analysis-tools {
+    display: grid;
+    gap: 7px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    background: #fbfdfc;
+}
+
+.tool-card {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: var(--white);
+}
+
+.tool-card summary {
+    padding: 9px 11px;
+    color: var(--green-900);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 700;
+    list-style-position: inside;
+}
+
+.tool-card[open] summary {
+    border-bottom: 1px solid var(--border);
+    background: var(--green-50);
+}
+
+.tool-content {
+    padding: 10px;
+}
+
+.tool-content > p {
+    margin: 0 0 8px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+.coordinate-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+}
+
+.tool-content label {
+    display: grid;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+.tool-content input,
+.tool-content select {
+    width: 100%;
+    min-width: 0;
+    padding: 7px 8px;
+    color: var(--text-main);
+    border: 1px solid #cfded7;
+    border-radius: 8px;
+    outline: none;
+    background: var(--white);
+    font-size: 0.73rem;
+}
+
+.tool-content input:focus,
+.tool-content select:focus {
+    border-color: var(--green-600);
+    box-shadow: 0 0 0 3px rgba(49, 144, 110, 0.12);
+}
+
+.destination-label {
+    margin-top: 8px;
+}
+
+.tool-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-top: 9px;
+}
+
+.primary-button,
+.secondary-button {
+    padding: 7px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.primary-button {
+    color: var(--white);
+    border: 1px solid var(--green-700);
+    background: var(--green-700);
+}
+
+.primary-button:hover {
+    background: var(--green-900);
+}
+
+.primary-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.secondary-button {
+    color: var(--green-800);
+    border: 1px solid #c7ded3;
+    background: var(--white);
+}
+
+.tool-result:not(:empty) {
+    margin-top: 9px;
+}
+
+.result-message,
+.nearest-result,
+.route-result-card {
+    padding: 8px 9px;
+    border-radius: 8px;
+    background: var(--green-50);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    line-height: 1.45;
+}
+
+.result-message.error {
+    color: #9b2c2c;
+    background: #fff5f5;
+}
+
+.nearest-result {
+    cursor: pointer;
+}
+
+.nearest-result strong,
+.route-result-card strong {
+    color: var(--green-900);
+}
+
+.route-results {
+    display: grid;
+    gap: 6px;
+}
+
+.route-result-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: var(--white);
+}
+
+.route-result-card:hover,
+.route-result-card.active {
+    border-color: var(--route-color);
+    background: var(--green-50);
+}
+
+.route-rank {
+    width: 25px;
+    height: 25px;
+    display: grid;
+    place-items: center;
+    color: var(--white);
+    border-radius: 50%;
+    background: var(--route-color);
+    font-weight: 700;
+}
+
+.route-meta {
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 0.66rem;
+}
+
 .place-card {
     position: relative;
     margin-bottom: 10px;

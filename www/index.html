@@ -46,6 +46,56 @@
                     </div>
                 </div>
 
+                <div class="analysis-tools">
+                    <details class="tool-card">
+                        <summary>📍 ค้นหาสถานที่ใกล้ที่สุด</summary>
+                        <div class="tool-content">
+                            <p>กรอกพิกัดปัจจุบันของคุณ</p>
+                            <div class="coordinate-grid">
+                                <label>
+                                    ละติจูด
+                                    <input id="nearestLat" type="number" step="any" min="-90" max="90" placeholder="18.7883">
+                                </label>
+                                <label>
+                                    ลองจิจูด
+                                    <input id="nearestLng" type="number" step="any" min="-180" max="180" placeholder="98.9853">
+                                </label>
+                            </div>
+                            <div class="tool-actions">
+                                <button id="useMyLocation" class="secondary-button" type="button">ใช้ตำแหน่งของฉัน</button>
+                                <button id="findNearest" class="primary-button" type="button">ค้นหา</button>
+                            </div>
+                            <div id="nearestResult" class="tool-result" aria-live="polite"></div>
+                        </div>
+                    </details>
+
+                    <details class="tool-card">
+                        <summary>🛣️ เปรียบเทียบ 3 เส้นทาง</summary>
+                        <div class="tool-content">
+                            <p>กรอกจุดเริ่มต้นและเลือกจุดหมาย</p>
+                            <div class="coordinate-grid">
+                                <label>
+                                    ละติจูดเริ่มต้น
+                                    <input id="routeLat" type="number" step="any" min="-90" max="90" placeholder="18.7883">
+                                </label>
+                                <label>
+                                    ลองจิจูดเริ่มต้น
+                                    <input id="routeLng" type="number" step="any" min="-180" max="180" placeholder="98.9853">
+                                </label>
+                            </div>
+                            <label class="destination-label">
+                                สถานที่ปลายทาง
+                                <select id="routeDestination"></select>
+                            </label>
+                            <div class="tool-actions">
+                                <button id="copyCoordinates" class="secondary-button" type="button">ใช้พิกัดด้านบน</button>
+                                <button id="calculateRoutes" class="primary-button" type="button">คำนวณเส้นทาง</button>
+                            </div>
+                            <div id="routeResult" class="tool-result" aria-live="polite"></div>
+                        </div>
+                    </details>
+                </div>
+
                 <div id="placeList"></div>
             </aside>
 

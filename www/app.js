@@ -40,6 +40,7 @@ L.control.layers(
 ).addTo(map);
 
 const markerLayer = L.layerGroup().addTo(map);
+const routeLayer = L.layerGroup().addTo(map);
 const markerById = new Map();
 const cardById = new Map();
 const categoryColors = new Map();
@@ -47,6 +48,7 @@ const colorPalette = [
     "#2f855a", "#2b6cb0", "#dd6b20", "#805ad5",
     "#d53f8c", "#319795", "#c53030", "#718096"
 ];
+const routeColors = ["#e53e3e", "#3182ce", "#805ad5"];
 
 const statusElement = document.querySelector("#status");
 const searchInput = document.querySelector("#searchInput");
@@ -54,6 +56,17 @@ const placeList = document.querySelector("#placeList");
 const summaryElement = document.querySelector("#summary");
 const categoryFilters = document.querySelector("#categoryFilters");
 const mapLegend = document.querySelector("#mapLegend");
+const nearestLatInput = document.querySelector("#nearestLat");
+const nearestLngInput = document.querySelector("#nearestLng");
+const routeLatInput = document.querySelector("#routeLat");
+const routeLngInput = document.querySelector("#routeLng");
+const routeDestination = document.querySelector("#routeDestination");
+const nearestResult = document.querySelector("#nearestResult");
+const routeResult = document.querySelector("#routeResult");
+const findNearestButton = document.querySelector("#findNearest");
+const calculateRoutesButton = document.querySelector("#calculateRoutes");
+const useMyLocationButton = document.querySelector("#useMyLocation");
+const copyCoordinatesButton = document.querySelector("#copyCoordinates");
 
 let allPlaces = [];
 let activeCategory = "ทั้งหมด";
@@ -75,6 +88,49 @@ function colorForCategory(category) {
         categoryColors.set(category, colorPalette[categoryColors.size % colorPalette.length]);
     }
     return categoryColors.get(category);
+}
+
+function readCoordinates(latitudeInput, longitudeInput) {
+    const latitude = Number(latitudeInput.value);
+    const longitude = Number(longitudeInput.value);
+
+    if (
+        !Number.isFinite(latitude) || !Number.isFinite(longitude) ||
+        latitude < -90 || latitude > 90 ||
+        longitude < -180 || longitude > 180
+    ) {
+        return null;
+    }
+
+    return { latitude, longitude };
+}
+
+function haversineDistance(startLatitude, startLongitude, endLatitude, endLongitude) {
+    const earthRadiusKm = 6371.0088;
+    const toRadians = (degrees) => degrees * Math.PI / 180;
+    const latitudeDifference = toRadians(endLatitude - startLatitude);
+    const longitudeDifference = toRadians(endLongitude - startLongitude);
+    const a =
+        Math.sin(latitudeDifference / 2) ** 2 +
+        Math.cos(toRadians(startLatitude)) *
+        Math.cos(toRadians(endLatitude)) *
+        Math.sin(longitudeDifference / 2) ** 2;
+
+    return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDistance(metres) {
+    if (metres < 1000) return `${Math.round(metres)} ม.`;
+    return `${(metres / 1000).toFixed(1)} กม.`;
+}
+
+function formatDuration(seconds) {
+    const totalMinutes = Math.round(seconds / 60);
+    if (totalMinutes < 60) return `${totalMinutes} นาที`;
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return minutes ? `${hours} ชม. ${minutes} นาที` : `${hours} ชม.`;
 }
 
 function createPopup(place) {
@@ -140,6 +196,195 @@ function renderCategoryFilters() {
         });
         categoryFilters.appendChild(button);
     });
+}
+
+function populateDestinationOptions() {
+    routeDestination.innerHTML = allPlaces.map((place) => `
+        <option value="${escapeHtml(place.id)}">${escapeHtml(place.id)}. ${escapeHtml(place.name)}</option>
+    `).join("");
+}
+
+function findNearestPlace() {
+    const coordinates = readCoordinates(nearestLatInput, nearestLngInput);
+    if (!coordinates) {
+        nearestResult.innerHTML = '<div class="result-message error">กรุณากรอกละติจูดและลองจิจูดให้ถูกต้อง</div>';
+        return;
+    }
+
+    const candidates = allPlaces
+        .map((place) => ({
+            place,
+            distance: haversineDistance(
+                coordinates.latitude,
+                coordinates.longitude,
+                Number(place.latitude),
+                Number(place.longitude)
+            )
+        }))
+        .filter(({ distance }) => Number.isFinite(distance))
+        .sort((first, second) => first.distance - second.distance);
+
+    if (!candidates.length) {
+        nearestResult.innerHTML = '<div class="result-message error">ไม่มีข้อมูลพิกัดที่ใช้คำนวณได้</div>';
+        return;
+    }
+
+    const nearest = candidates[0];
+    routeLayer.clearLayers();
+    nearestResult.innerHTML = `
+        <div class="nearest-result" role="button" tabindex="0">
+            <strong>${escapeHtml(nearest.place.name)}</strong><br>
+            ระยะเส้นตรงประมาณ ${(nearest.distance).toFixed(2)} กม.<br>
+            <span>คลิกเพื่อดูบนแผนที่</span>
+        </div>
+    `;
+
+    const resultCard = nearestResult.querySelector(".nearest-result");
+    const openNearest = () => {
+        activeCategory = "ทั้งหมด";
+        searchInput.value = "";
+        renderCategoryFilters();
+        applyFilters();
+        showPlace(nearest.place);
+    };
+    resultCard.addEventListener("click", openNearest);
+    resultCard.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openNearest();
+        }
+    });
+
+    L.circleMarker([coordinates.latitude, coordinates.longitude], {
+        radius: 7,
+        color: "#ffffff",
+        weight: 3,
+        fillColor: "#111827",
+        fillOpacity: 1
+    }).bindTooltip("ตำแหน่งของคุณ").addTo(routeLayer);
+
+    map.fitBounds([
+        [coordinates.latitude, coordinates.longitude],
+        [nearest.place.latitude, nearest.place.longitude]
+    ], { padding: [55, 55], maxZoom: 14 });
+}
+
+function highlightRoute(routeEntries, selectedIndex) {
+    routeEntries.forEach((entry, index) => {
+        entry.line.setStyle({
+            weight: index === selectedIndex ? 8 : 5,
+            opacity: index === selectedIndex ? 0.95 : 0.45
+        });
+        if (index === selectedIndex) entry.line.bringToFront();
+    });
+
+    routeResult.querySelectorAll(".route-result-card").forEach((card, index) => {
+        card.classList.toggle("active", index === selectedIndex);
+    });
+
+    map.fitBounds(routeEntries[selectedIndex].line.getBounds(), { padding: [55, 55] });
+}
+
+async function calculateRoutes() {
+    const start = readCoordinates(routeLatInput, routeLngInput);
+    const destination = allPlaces.find(
+        (place) => String(place.id) === routeDestination.value
+    );
+
+    if (!start) {
+        routeResult.innerHTML = '<div class="result-message error">กรุณากรอกพิกัดเริ่มต้นให้ถูกต้อง</div>';
+        return;
+    }
+    if (!destination) {
+        routeResult.innerHTML = '<div class="result-message error">กรุณาเลือกสถานที่ปลายทาง</div>';
+        return;
+    }
+
+    calculateRoutesButton.disabled = true;
+    calculateRoutesButton.textContent = "กำลังคำนวณ...";
+    routeResult.innerHTML = '<div class="result-message">กำลังค้นหาเส้นทางบนโครงข่ายถนน...</div>';
+    routeLayer.clearLayers();
+
+    const startPair = `${start.longitude},${start.latitude}`;
+    const endPair = `${Number(destination.longitude)},${Number(destination.latitude)}`;
+    const requestUrl =
+        `https://router.project-osrm.org/route/v1/driving/${startPair};${endPair}` +
+        "?alternatives=3&steps=false&geometries=geojson&overview=full";
+
+    try {
+        const response = await fetch(requestUrl);
+        if (!response.ok) throw new Error(`Routing service returned ${response.status}`);
+
+        const result = await response.json();
+        if (result.code !== "Ok" || !result.routes?.length) {
+            throw new Error(result.message || "No route found");
+        }
+
+        const routes = [...result.routes]
+            .sort((first, second) => first.distance - second.distance)
+            .slice(0, 3);
+        const routeEntries = routes.map((route, index) => {
+            const line = L.geoJSON(route.geometry, {
+                style: {
+                    color: routeColors[index],
+                    weight: index === 0 ? 8 : 5,
+                    opacity: index === 0 ? 0.95 : 0.45
+                }
+            }).addTo(routeLayer);
+            return { route, line };
+        });
+
+        L.circleMarker([start.latitude, start.longitude], {
+            radius: 7, color: "#ffffff", weight: 3,
+            fillColor: "#111827", fillOpacity: 1
+        }).bindTooltip("จุดเริ่มต้น").addTo(routeLayer);
+
+        L.circleMarker([destination.latitude, destination.longitude], {
+            radius: 8, color: "#ffffff", weight: 3,
+            fillColor: "#16a34a", fillOpacity: 1
+        }).bindTooltip(destination.name).addTo(routeLayer);
+
+        routeResult.innerHTML = `
+            <div class="route-results">
+                ${routeEntries.map(({ route }, index) => `
+                    <div class="route-result-card ${index === 0 ? "active" : ""}"
+                         style="--route-color:${routeColors[index]}" role="button" tabindex="0">
+                        <span class="route-rank">${index + 1}</span>
+                        <div>
+                            <strong>เส้นทางอันดับ ${index + 1}</strong>
+                            <div class="route-meta">${formatDistance(route.distance)} · ${formatDuration(route.duration)}</div>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+            ${routeEntries.length < 3
+                ? `<div class="result-message">ระบบพบเส้นทางที่แตกต่างกัน ${routeEntries.length} เส้นทาง</div>`
+                : ""}
+        `;
+
+        routeResult.querySelectorAll(".route-result-card").forEach((card, index) => {
+            const chooseRoute = () => highlightRoute(routeEntries, index);
+            card.addEventListener("click", chooseRoute);
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    chooseRoute();
+                }
+            });
+        });
+
+        highlightRoute(routeEntries, 0);
+    } catch (error) {
+        console.error("Routing error:", error);
+        routeResult.innerHTML = `
+            <div class="result-message error">
+                คำนวณเส้นทางไม่สำเร็จ กรุณาตรวจสอบพิกัดหรือทดลองใหม่ภายหลัง
+            </div>
+        `;
+    } finally {
+        calculateRoutesButton.disabled = false;
+        calculateRoutesButton.textContent = "คำนวณเส้นทาง";
+    }
 }
 
 function markSelectedPlace(placeId, scrollCard = false) {
@@ -247,10 +492,49 @@ async function loadPlaces() {
 
     allPlaces = data ?? [];
     getCategories().forEach(colorForCategory);
+    populateDestinationOptions();
     renderCategoryFilters();
     renderLegend();
     applyFilters();
 }
 
 searchInput.addEventListener("input", applyFilters);
+findNearestButton.addEventListener("click", findNearestPlace);
+calculateRoutesButton.addEventListener("click", calculateRoutes);
+
+copyCoordinatesButton.addEventListener("click", () => {
+    routeLatInput.value = nearestLatInput.value;
+    routeLngInput.value = nearestLngInput.value;
+    routeResult.innerHTML = '<div class="result-message">คัดลอกพิกัดเริ่มต้นแล้ว</div>';
+});
+
+useMyLocationButton.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+        nearestResult.innerHTML = '<div class="result-message error">เบราว์เซอร์นี้ไม่รองรับการระบุตำแหน่ง</div>';
+        return;
+    }
+
+    useMyLocationButton.disabled = true;
+    useMyLocationButton.textContent = "กำลังค้นหาตำแหน่ง...";
+    navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+            const latitude = coords.latitude.toFixed(6);
+            const longitude = coords.longitude.toFixed(6);
+            nearestLatInput.value = latitude;
+            nearestLngInput.value = longitude;
+            routeLatInput.value = latitude;
+            routeLngInput.value = longitude;
+            useMyLocationButton.disabled = false;
+            useMyLocationButton.textContent = "ใช้ตำแหน่งของฉัน";
+            findNearestPlace();
+        },
+        () => {
+            nearestResult.innerHTML = '<div class="result-message error">ไม่สามารถอ่านตำแหน่งได้ กรุณาอนุญาตการเข้าถึงตำแหน่งหรือกรอกพิกัดเอง</div>';
+            useMyLocationButton.disabled = false;
+            useMyLocationButton.textContent = "ใช้ตำแหน่งของฉัน";
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+});
+
 loadPlaces();
