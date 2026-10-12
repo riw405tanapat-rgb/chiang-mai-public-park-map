@@ -600,6 +600,77 @@ main {
     font-weight: 600;
 }
 
+.place-media {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    background: linear-gradient(135deg, #dcefe5, #b9ddcc);
+}
+
+.place-media-card {
+    width: calc(100% + 31px);
+    height: 112px;
+    margin: -14px -14px 12px -17px;
+}
+
+.place-media-popup {
+    width: 100%;
+    height: 145px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+}
+
+.place-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.place-card:hover .place-media img {
+    transform: scale(1.045);
+}
+
+.place-media figcaption {
+    position: absolute;
+    right: 6px;
+    bottom: 5px;
+    max-width: calc(100% - 12px);
+    padding: 3px 6px;
+    overflow: hidden;
+    border-radius: 5px;
+    background: rgba(10, 25, 20, 0.72);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.58rem;
+}
+
+.place-media figcaption a {
+    color: rgba(255, 255, 255, 0.94);
+    text-decoration: none;
+}
+
+.place-media-placeholder {
+    display: grid;
+    place-content: center;
+    gap: 3px;
+    color: var(--green-800);
+    text-align: center;
+    background:
+        radial-gradient(circle at 70% 20%, rgba(255, 255, 255, 0.75), transparent 28%),
+        linear-gradient(135deg, #e7f4ed, #b9ddcc);
+}
+
+.place-media-placeholder span {
+    font-size: 1.8rem;
+}
+
+.place-media-placeholder small {
+    font-size: 0.62rem;
+    font-weight: 600;
+}
+
 .leaflet-control-layers-selector {
     accent-color: var(--green-700);
 }

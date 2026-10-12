@@ -50,6 +50,18 @@ const colorPalette = [
     "#d53f8c", "#319795", "#c53030", "#718096"
 ];
 const routeColors = ["#e53e3e", "#3182ce", "#805ad5"];
+const placeImages = new Map([
+    [1, {
+        url: "https://commons.wikimedia.org/wiki/Special:Redirect/file/อ่างแก้ว_มหาวิทยาลัยเชียงใหม่_-_panoramio.jpg?width=900",
+        sourceUrl: "https://commons.wikimedia.org/wiki/File:อ่างแก้ว_มหาวิทยาลัยเชียงใหม่_-_panoramio.jpg",
+        credit: "::::=UT=:::: · CC BY-SA 3.0"
+    }],
+    [12, {
+        url: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chiang_Mai_-_Wat_Umong_Maha_Therachan_-_0001.jpg?width=900",
+        sourceUrl: "https://commons.wikimedia.org/wiki/File:Chiang_Mai_-_Wat_Umong_Maha_Therachan_-_0001.jpg",
+        credit: "Stefan Fussan · CC BY-SA 3.0"
+    }]
+]);
 
 const statusElement = document.querySelector("#status");
 const searchInput = document.querySelector("#searchInput");
@@ -116,6 +128,36 @@ function formatDuration(seconds) {
     return minutes ? `${hours} ชม. ${minutes} นาที` : `${hours} ชม.`;
 }
 
+function createPlaceMedia(place, variant = "card") {
+    const media = place.image_url
+        ? {
+            url: place.image_url,
+            sourceUrl: place.image_source_url || place.image_url,
+            credit: place.image_credit || "ภาพสถานที่"
+        }
+        : placeImages.get(Number(place.id));
+
+    if (!media) {
+        return `
+            <div class="place-media place-media-${variant} place-media-placeholder" aria-label="ยังไม่มีภาพสถานที่">
+                <span aria-hidden="true">🌿</span>
+                <small>ยังไม่มีภาพสถานที่</small>
+            </div>
+        `;
+    }
+
+    return `
+        <figure class="place-media place-media-${variant}">
+            <img src="${escapeHtml(media.url)}" alt="ภาพ ${escapeHtml(place.name)}" loading="lazy">
+            <figcaption>
+                <a href="${escapeHtml(media.sourceUrl)}" target="_blank" rel="noopener noreferrer">
+                    ${escapeHtml(media.credit)}
+                </a>
+            </figcaption>
+        </figure>
+    `;
+}
+
 function createPopup(place) {
     const latitude = Number(place.latitude);
     const longitude = Number(place.longitude);
@@ -124,6 +166,7 @@ function createPopup(place) {
 
     return `
         <article>
+            ${createPlaceMedia(place, "popup")}
             <h2 class="popup-title">${escapeHtml(place.id)}. ${escapeHtml(place.name)}</h2>
             <div class="popup-category">
                 <span class="popup-dot" style="background:${colorForCategory(place.category)}"></span>
@@ -441,6 +484,7 @@ function renderPlaces(places) {
         card.className = "place-card";
         card.tabIndex = 0;
         card.innerHTML = `
+            ${createPlaceMedia(place)}
             <h2>${escapeHtml(place.id)}. ${escapeHtml(place.name)}</h2>
             <p>${escapeHtml(place.category)}</p>
             <p>ต.${escapeHtml(place.subdistrict)} · อ.${escapeHtml(place.district)}</p>
