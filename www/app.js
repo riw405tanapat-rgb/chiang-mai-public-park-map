@@ -52,9 +52,44 @@ const colorPalette = [
 const routeColors = ["#e53e3e", "#3182ce", "#805ad5"];
 const placeImages = new Map([
     [1, {
-        url: "https://commons.wikimedia.org/wiki/Special:Redirect/file/อ่างแก้ว_มหาวิทยาลัยเชียงใหม่_-_panoramio.jpg?width=900",
-        sourceUrl: "https://commons.wikimedia.org/wiki/File:อ่างแก้ว_มหาวิทยาลัยเชียงใหม่_-_panoramio.jpg",
-        credit: "::::=UT=:::: · CC BY-SA 3.0"
+        url: "https://readthecloud.co/wp-content/uploads/2026/08/005_11zon.webp",
+        sourceUrl: "https://readthecloud.co/wp-content/uploads/2026/08/005_11zon.webp",
+        credit: "ที่มา: The Cloud"
+    }],
+    [2, {
+        url: "https://cdn.chiangmainews.co.th/wp-content/uploads/2020/10/04110938/สถานที่-ฟาร์ม-900ไร่_200910_8.jpg",
+        sourceUrl: "https://cdn.chiangmainews.co.th/wp-content/uploads/2020/10/04110938/สถานที่-ฟาร์ม-900ไร่_200910_8.jpg",
+        credit: "ที่มา: Chiang Mai News"
+    }],
+    [3, {
+        url: "https://www.cmhy.city/uploads/photos/157-Travel-by-CMHY/159-Park/17768-Princess-Mothers-Health-Garden/place17768_IMG_20190514_1648555-panorama.jpg",
+        sourceUrl: "https://www.cmhy.city/uploads/photos/157-Travel-by-CMHY/159-Park/17768-Princess-Mothers-Health-Garden/place17768_IMG_20190514_1648555-panorama.jpg",
+        credit: "ที่มา: CMHY.city"
+    }],
+    [4, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_57Vtc7lntqMPu07w8IRB4KRshIe-ACRkHEhbsioQXledIgsyu4uTxqk&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_57Vtc7lntqMPu07w8IRB4KRshIe-ACRkHEhbsioQXledIgsyu4uTxqk&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [5, {
+        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFK5RuZ6eFDQw3pYmp-ryE7ONjrly-KZEdrKQOHKoY-v5HX4HEoZB9eJE&s=10",
+        sourceUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFK5RuZ6eFDQw3pYmp-ryE7ONjrly-KZEdrKQOHKoY-v5HX4HEoZB9eJE&s=10",
+        credit: "ที่มา: Google Images (แคช)"
+    }],
+    [6, {
+        url: "https://f.ptcdn.info/954/073/000/qvb33pohr0ufi8QH4EC-o.jpg",
+        sourceUrl: "https://f.ptcdn.info/954/073/000/qvb33pohr0ufi8QH4EC-o.jpg",
+        credit: "ที่มา: Pantip CDN"
+    }],
+    [7, {
+        url: "https://www.chiangmaitouring.com/wp-content/uploads/2014/01/C360_2014-01-16-09-18-06-477.jpg",
+        sourceUrl: "https://www.chiangmaitouring.com/wp-content/uploads/2014/01/C360_2014-01-16-09-18-06-477.jpg",
+        credit: "ที่มา: Chiang Mai Touring"
+    }],
+    [8, {
+        url: "https://www.cmcity.go.th/data/content/2024/22456/cms/big/image_cms_cdilnpqsux57.jpg",
+        sourceUrl: "https://www.cmcity.go.th/data/content/2024/22456/cms/big/image_cms_cdilnpqsux57.jpg",
+        credit: "ที่มา: เทศบาลนครเชียงใหม่"
     }],
     [12, {
         url: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chiang_Mai_-_Wat_Umong_Maha_Therachan_-_0001.jpg?width=900",
